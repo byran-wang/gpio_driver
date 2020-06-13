@@ -22,16 +22,31 @@
 #include <asm/uaccess.h>
 #include <linux/poll.h>
 
+
+
 #define DEVICE_NAME            "gpiodrv"
 #define GPIO_MAJOR            200
-#define IOCTL_MAGIC            'g'
-#define GPIO_OUT_LOW        _IOW(IOCTL_MAGIC, 0x00, unsigned long)
-#define GPIO_OUT_HIG        _IOW(IOCTL_MAGIC, 0x01, unsigned long)
-#define GPIO_INPUT            _IOR(IOCTL_MAGIC, 0x02, unsigned long)
+#define GPIO_IOC_MAGIC            'g'
+
+/* general APIs - GPIO_IOC_MAGIC */
+enum {
+    IOC_OUTPUT_CLR,
+    IOC_OUTPUT_SET,
+    IOC_SET_INPUT,
+};
+
+#define GPIO_IOC_OUTPUT_LOW        _IOW(GPIO_IOC_MAGIC, IOC_OUTPUT_CLR, unsigned int)
+#define GPIO_IOC_OUTPUT_HIG        _IOW(GPIO_IOC_MAGIC, IOC_OUTPUT_SET, unsigned int)
+#define GPIO_IOC_INPUT            _IOR(GPIO_IOC_MAGIC, IOC_SET_INPUT, unsigned int)
+
+
+
 
 static struct cdev cdev;
 static struct class *gpio_class;
 static dev_t devno;
+
+#define DBG_PRINT (printk("simba: %s,%u \t", __FILE__, __LINE__), printk) 
 
 /*OPEN*/
 static int gpio_open(struct inode *inode, struct file *filp)
@@ -61,37 +76,45 @@ static long gpio_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 {
     unsigned int ret = 0,err = 0;
 
-    if (_IOC_TYPE(cmd) != IOCTL_MAGIC)
+    if (_IOC_TYPE(cmd) != GPIO_IOC_MAGIC)
         return -EINVAL;
 
     if (arg > 200)
         return -EINVAL;
-
+    
     //申请gpio引脚
+    printk("arg = %ld!\n",arg);
     err = gpio_request(arg,NULL);
     if(err)
     {
-        printk("gpio_ioctl request err!\n");
+        printk("err = %x!\n",err);        
     }
-
+    DBG_PRINT("%d\n",cmd);
     switch(cmd) {
-    case GPIO_OUT_LOW:
+    case GPIO_IOC_OUTPUT_LOW:
+        DBG_PRINT("\n");
         gpio_direction_output(arg,0);
         break;
 
-    case GPIO_OUT_HIG:
+    case GPIO_IOC_OUTPUT_HIG:
+        DBG_PRINT("\n");
         gpio_direction_output(arg,1);
         break;
 
-    case GPIO_INPUT:
+    case GPIO_IOC_INPUT:
+        DBG_PRINT("\n");
         gpio_direction_input(arg);
         ret = gpio_get_value(arg);
         break;
 
     default:
+        DBG_PRINT("%d\n",cmd);
         ret = -EINVAL;
         break;
     }
+    DBG_PRINT("GPIO_OUT_LOW %ld\n",GPIO_IOC_OUTPUT_LOW);
+    DBG_PRINT("GPIO_OUT_HIG %ld\n",GPIO_IOC_OUTPUT_HIG);
+    DBG_PRINT("GPIO_INPUT %ld\n",GPIO_IOC_INPUT);
 
     return ret;
 }
