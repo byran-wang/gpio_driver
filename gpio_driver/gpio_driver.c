@@ -166,6 +166,7 @@ static int __init gpio_init(void)
 /*DEV EXIT*/
 static void __exit gpio_exit(void)
 {
+    printk("deinit gpio driver module...\n");
     cdev_del(&cdev);
     unregister_chrdev_region(devno, 1);
     device_destroy(gpio_class, devno);
@@ -176,5 +177,5 @@ module_init(gpio_init);
 module_exit(gpio_exit);
 
 MODULE_LICENSE("GPL");
-MODULE_AUTHOR("ZFJ");
+MODULE_AUTHOR("Simba");
 MODULE_DESCRIPTION("GPIO driver for test");
