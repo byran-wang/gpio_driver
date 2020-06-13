@@ -1,4 +1,4 @@
-CROSS_COMPILE = ./../prebuilts/gcc/linux-x86/aarch64/gcc-linaro-6.3.1-2017.05-x86_64_aarch64-linux-gnu/bin/aarch64-linux-gnu-
+CROSS_COMPILE = ./../../prebuilts/gcc/linux-x86/aarch64/gcc-linaro-6.3.1-2017.05-x86_64_aarch64-linux-gnu/bin/aarch64-linux-gnu-
 # Make variables (CC, etc...)
 AS		= $(CROSS_COMPILE)as
 LD		= $(CROSS_COMPILE)ld
@@ -21,6 +21,6 @@ CHECK		= sparse
 # 	$(Q)$(CC) gpio_test.c
 # 	adb push a.out /userdata/simba 
 
-all: gpio_test.c
-	$(Q)$(CC) -o gpio_test gpio_test.c
-	adb push gpio_test /userdata/simba 
+all: gpio_sysfile.c
+	$(Q)$(CC) -o gpio_sysfile gpio_sysfile.c
+	adb push gpio_sysfile /userdata/simba 
