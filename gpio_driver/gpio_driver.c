@@ -21,6 +21,7 @@
 #include <asm/io.h>
 #include <asm/uaccess.h>
 #include <linux/poll.h>
+#include <linux/delay.h>
 
 
 
@@ -132,15 +133,41 @@ static struct file_operations gpio_fops = {
 static int gpio_setup(struct cdev *cdevp, dev_t dev)
 {
     int ret = 0;
-
+    //初始化cdevp的成员，病建立cdevp和gpio_fops的关系。
     cdev_init(cdevp, &gpio_fops);
     cdevp->owner = THIS_MODULE;
     cdevp->ops = &gpio_fops;
+    //向系统添加一个cdev设备
     ret = cdev_add(cdevp, dev, 1);
     if (ret)
         printk(KERN_ALERT"add gpio setup failed!\n");
 
     return ret;
+}
+
+void call_func2_with_irq_off(void)
+{
+    // mdelay(1000);
+    volatile unsigned int i = 0,j;
+    for (i = 0; i < 0xffff; i++)
+    {
+        
+        j++;
+    }
+        // DBG_PRINT("\n");
+}
+
+void call_func1_with_irq_off(void)
+{
+    int i = 0;
+    // DBG_PRINT("\n");
+    for (i = 0; i < 0xff*30; i++)
+    {
+        // DBG_PRINT("\n");
+        call_func2_with_irq_off();
+    } 
+    asm volatile(""); 
+    // DBG_PRINT("\n");
 }
 
 
@@ -157,7 +184,7 @@ static int __init gpio_init(void)
     gpio_major = MAJOR(devno);
     if (gpio_major)
         ret = register_chrdev_region(devno, 1, DEVICE_NAME);
-    else
+    else  //如果主设备好已经被使用，就由系统动态申请一个
         ret = alloc_chrdev_region(&devno, 0,1, DEVICE_NAME);
 
     if (ret < 0) {
@@ -182,6 +209,9 @@ static int __init gpio_init(void)
         printk(KERN_ALERT"failed in creating class.\n");
         return -1;
     }
+    local_irq_disable();
+    call_func1_with_irq_off();
+    local_irq_enable();
 
     return ret;
 }

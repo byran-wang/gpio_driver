@@ -26,9 +26,9 @@ static int led_pin;
 static volatile unsigned int *gpio_con;
 static volatile unsigned int *gpio_dat;
 
-/* 123. ·ÖÅä/ÉèÖÃ/×¢²áfile_operations 
- * 4. Èë¿Ú
- * 5. ³ö¿Ú
+/* 123. ï¿½ï¿½ï¿½ï¿½/ï¿½ï¿½ï¿½ï¿½/×¢ï¿½ï¿½file_operations 
+ * 4. ï¿½ï¿½ï¿½
+ * 5. ï¿½ï¿½ï¿½ï¿½
  */
 
 static int major;
@@ -49,7 +49,7 @@ static unsigned int gpio_base[] = {
 
 static int led_open (struct inode *node, struct file *filp)
 {
-	/* °ÑLEDÒý½ÅÅäÖÃÎªÊä³öÒý½Å */
+	/* ï¿½ï¿½LEDï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
 	/* GPF5 - 0x56000050 */
 	int bank = led_pin >> 16;
 	int base = gpio_base[bank];
@@ -73,7 +73,7 @@ static int led_open (struct inode *node, struct file *filp)
 
 static ssize_t led_write (struct file *filp, const char __user *buf, size_t size, loff_t *off)
 {
-	/* ¸ù¾ÝAPP´«ÈëµÄÖµÀ´ÉèÖÃLEDÒý½Å */
+	/* ï¿½ï¿½ï¿½ï¿½APPï¿½ï¿½ï¿½ï¿½ï¿½Öµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½LEDï¿½ï¿½ï¿½ï¿½ */
 	unsigned char val;
 	int pin = led_pin & 0xffff;
 	
@@ -81,16 +81,16 @@ static ssize_t led_write (struct file *filp, const char __user *buf, size_t size
 
 	if (val)
 	{
-		/* µãµÆ */
+		/* ï¿½ï¿½ï¿½ */
 		*gpio_dat &= ~(1<<pin);
 	}
 	else
 	{
-		/* ÃðµÆ */
+		/* ï¿½ï¿½ï¿½ */
 		*gpio_dat |= (1<<pin);
 	}
 
-	return 1; /* ÒÑÐ´Èë1¸öÊý¾Ý */
+	return 1; /* ï¿½ï¿½Ð´ï¿½ï¿½1ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
 }
 
 static int led_release (struct inode *node, struct file *filp)
@@ -113,7 +113,7 @@ static int led_probe(struct platform_device *pdev)
 {
 	struct resource		*res;
 
-	/* ¸ù¾Ýplatform_deviceµÄ×ÊÔ´½øÐÐioremap */
+	/* ï¿½ï¿½ï¿½ï¿½platform_deviceï¿½ï¿½ï¿½ï¿½Ô´ï¿½ï¿½ï¿½ï¿½ioremap */
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	led_pin = res->start;
 
